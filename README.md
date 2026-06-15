@@ -1,35 +1,96 @@
 # WakuWaku Anime Catgirl Chat Companion 🐱✨
 
-An interactive web application featuring an anime-style AI companion. This project leverages the Google Gemini API for natural conversation and the Web Speech API for voice synthesis with synchronized lip-sync animations.
+An interactive anime-style AI companion powered by **Google Gemini** with expressive animations, voice synthesis, and synchronized lip-sync.
 
-## 🚀 Features
+🌐 **Live Demo:** *Coming Soon*
+🔗 **Repository:** https://github.com/Riaz1407/Ai-Companion-
 
-- **Intelligent Chat:** Engaging conversations powered by Gemini.
-- **Voice & Lip-Sync:** Real-time mouth animations that sync with the browser's Text-to-Speech.
-- **High-Quality Voices:** Automatically filters for premium Google TTS voices when available.
-- **Advanced UI:** Includes a robust typewriter effect that correctly handles emojis and complex characters using `Intl.Segmenter`.
-- **Session Management:** Unique session IDs to maintain conversation context during a single visit.
+---
 
-## 🛠️ Local Setup
+## ✨ Features
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Riaz1407/companion-python.git
-   cd companion-python
-   ```
+* 🤖 **Intelligent Chat** – Natural and engaging conversations powered by Google Gemini.
+* 🎤 **Voice & Lip-Sync** – Real-time mouth animations synchronized with browser Text-to-Speech.
+* 🔊 **High-Quality Voices** – Automatically selects premium Google TTS voices when available.
+* ⚡ **Advanced UI** – Smooth typewriter effect with full emoji and Unicode support using `Intl.Segmenter`.
+* 🧠 **Session Management** – Maintains conversation context during a user's session.
+* 🎭 **Anime Character Expressions** – Dynamic visual emotions and character reactions.
 
-2. **Install requirements:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+---
 
-3. **Configure Environment:**
-   Create a `.env` file in the root directory:
-   ```env
-   GEMINI_API_KEY=your_google_ai_studio_key_here
-   ```
+## 🛠️ Tech Stack
 
-4. **Launch:**
-   ```bash
-   python app.py
-   ```
+* Python
+* Flask
+* Google Gemini API
+* HTML / CSS / JavaScript
+* Web Speech API
+
+---
+
+## 🚀 Local Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/Riaz1407/Ai-Companion-.git
+cd Ai-Companion-
+```
+
+### 2. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Configure Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+GEMINI_API_KEY=your_google_ai_studio_key_here
+```
+
+### 4. Run the Application
+
+```bash
+python app.py
+```
+
+The app will start locally. Open your browser and visit:
+
+```text
+http://localhost:5000
+```
+
+---
+
+## 📂 Project Structure
+
+```text
+Ai-Companion-
+├── app.py
+├── character.py
+├── requirements.txt
+├── static/
+├── templates/
+├── skills/
+└── README.md
+```
+
+---
+
+## 📸 Screenshots
+
+Add screenshots or GIFs here to showcase:
+
+* Chat Interface
+* Character Expressions
+* Voice & Lip Sync
+* Mobile/Desktop UI
+
+---
+
+## 📜 License
+
+This project is open source and available under the MIT License.
