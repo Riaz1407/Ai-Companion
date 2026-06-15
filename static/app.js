@@ -6,15 +6,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const voiceSelect = document.getElementById('voice-select');
     const status = document.getElementById('status');
 
-    const openMouthImg = `/static/images/char-mouth-open.png?v=${sessionId}`;
-    const closedMouthImg = `/static/images/char-mouth-closed.png?v=${sessionId}`;
+    let currentOpenImg = `/static/images/char-neutral-open.png?v=${sessionId}`;
+    let currentClosedImg = `/static/images/char-neutral-closed.png?v=${sessionId}`;
 
-    // Apply cache-busted source immediately and preload images
-    characterImage.src = closedMouthImg;
-    const preloadOpen = new Image();
-    preloadOpen.src = openMouthImg;
-    const preloadClosed = new Image();
-    preloadClosed.src = closedMouthImg;
+    // Preload all expressions to avoid flickering
+    const emotions = ['neutral', 'happy', 'sad', 'angry', 'surprised'];
+    emotions.forEach(emo => {
+        const imgOpen = new Image();
+        imgOpen.src = `/static/images/char-${emo}-open.png?v=${sessionId}`;
+        const imgClosed = new Image();
+        imgClosed.src = `/static/images/char-${emo}-closed.png?v=${sessionId}`;
+    });
+
+    // Set initial state
+    characterImage.src = currentClosedImg;
 
     let voices = [];
     let lipSyncInterval;
@@ -22,6 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function populateVoiceList() {
         const allVoices = speechSynthesis.getVoices();
         voices = allVoices.filter(voice => voice.name.includes('Google'));
+        if (voices.length === 0) {
+            voices = allVoices.filter(voice => voice.lang.startsWith('en'));
+            if (voices.length === 0) {
+                voices = allVoices;
+            }
+        }
         voiceSelect.innerHTML = '';
 
         let usVoiceIndex = -1;
@@ -50,7 +61,13 @@ document.addEventListener('DOMContentLoaded', () => {
         speechSynthesis.onvoiceschanged = populateVoiceList;
     }
 
+    let typewriterTimeout;
+
     const typewriter = (text, element, speed = 50) => {
+        if (typewriterTimeout) {
+            clearTimeout(typewriterTimeout);
+        }
+
         // Use Intl.Segmenter to handle grapheme clusters correctly
         if (window.Intl && Intl.Segmenter) {
             const segmenter = new Intl.Segmenter(undefined, { granularity: 'grapheme' });
@@ -63,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (i < segments.length) {
                     element.innerHTML += segments[i];
                     i++;
-                    setTimeout(type, speed);
+                    typewriterTimeout = setTimeout(type, speed);
                 }
             }
             type();
@@ -75,11 +92,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (i < text.length) {
                     element.innerHTML += text.charAt(i);
                     i++;
-                    setTimeout(type, speed);
+                    typewriterTimeout = setTimeout(type, speed);
                 }
             }
             type();
         }
+    };
+
+    const setExpression = (emotion) => {
+        currentOpenImg = `/static/images/char-${emotion}-open.png?v=${sessionId}`;
+        currentClosedImg = `/static/images/char-${emotion}-closed.png?v=${sessionId}`;
+        characterImage.src = currentClosedImg;
     };
 
     const speak = (text) => {
@@ -89,28 +112,32 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(lipSyncInterval);
 
         const utterance = new SpeechSynthesisUtterance(text);
-        const selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
-        const selectedVoice = voices.find(voice => voice.name === selectedOption);
-        if (selectedVoice) {
-            utterance.voice = selectedVoice;
+        const selectedOption = (voiceSelect.selectedOptions && voiceSelect.selectedOptions.length > 0)
+            ? voiceSelect.selectedOptions[0].getAttribute('data-name')
+            : null;
+        if (selectedOption) {
+            const selectedVoice = voices.find(voice => voice.name === selectedOption);
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            }
         }
 
         utterance.onstart = () => {
             let mouthOpen = true;
             lipSyncInterval = setInterval(() => {
-                characterImage.src = mouthOpen ? openMouthImg : closedMouthImg;
+                characterImage.src = mouthOpen ? currentOpenImg : currentClosedImg;
                 mouthOpen = !mouthOpen;
             }, 150);
         };
 
         utterance.onend = () => {
             clearInterval(lipSyncInterval);
-            characterImage.src = closedMouthImg;
+            characterImage.src = currentClosedImg;
         };
 
         utterance.onerror = () => {
             clearInterval(lipSyncInterval);
-            characterImage.src = closedMouthImg;
+            characterImage.src = currentClosedImg;
         };
 
         speechSynthesis.speak(utterance);
@@ -119,6 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleSendMessage = async () => {
         const message = textInput.value.trim();
         if (!message) return;
+
+        // Disable input while request is processing
+        textInput.disabled = true;
+        sendButton.disabled = true;
 
         textInput.value = '';
         textInput.style.height = '50px';
@@ -138,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const data = await response.json();
+            setExpression(data.emotion || 'neutral');
             typewriter(data.response, status);
             speak(data.response);
         } catch (error) {
@@ -145,6 +177,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const errorMessage = 'Sorry, something went wrong. Please try again.';
             typewriter(errorMessage, status);
             speak(errorMessage);
+        } finally {
+            // Re-enable inputs
+            textInput.disabled = false;
+            sendButton.disabled = false;
+            textInput.focus();
         }
     };
 
