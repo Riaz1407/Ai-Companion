@@ -6,20 +6,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const voiceSelect = document.getElementById('voice-select');
     const status = document.getElementById('status');
 
-    let currentOpenImg = `/static/images/char-neutral-open.png?v=${sessionId}`;
-    let currentClosedImg = `/static/images/char-neutral-closed.png?v=${sessionId}`;
+    const openMouthImg = `/static/images/char-mouth-open.png?v=${sessionId}`;
+    const closedMouthImg = `/static/images/char-mouth-closed.png?v=${sessionId}`;
+    const emotionBubble = document.getElementById('emotion-bubble');
 
-    // Preload all expressions to avoid flickering
-    const emotions = ['neutral', 'happy', 'sad', 'angry', 'surprised'];
-    emotions.forEach(emo => {
-        const imgOpen = new Image();
-        imgOpen.src = `/static/images/char-${emo}-open.png?v=${sessionId}`;
-        const imgClosed = new Image();
-        imgClosed.src = `/static/images/char-${emo}-closed.png?v=${sessionId}`;
-    });
+    // Preload closed and open mouth images
+    const preloadOpen = new Image();
+    preloadOpen.src = openMouthImg;
+    const preloadClosed = new Image();
+    preloadClosed.src = closedMouthImg;
 
     // Set initial state
-    characterImage.src = currentClosedImg;
+    characterImage.src = closedMouthImg;
 
     let voices = [];
     let lipSyncInterval;
@@ -99,10 +97,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const emojis = {
+        neutral: '🐱',
+        happy: '❤️',
+        sad: '💧',
+        angry: '💢',
+        surprised: '⚡'
+    };
+
     const setExpression = (emotion) => {
-        currentOpenImg = `/static/images/char-${emotion}-open.png?v=${sessionId}`;
-        currentClosedImg = `/static/images/char-${emotion}-closed.png?v=${sessionId}`;
-        characterImage.src = currentClosedImg;
+        // Remove existing emotion classes
+        const allEmotions = ['neutral', 'happy', 'sad', 'angry', 'surprised'];
+        allEmotions.forEach(emo => {
+            characterImage.classList.remove(emo);
+            emotionBubble.classList.remove(emo);
+        });
+
+        // Add new emotion classes
+        const validEmotion = allEmotions.includes(emotion) ? emotion : 'neutral';
+        characterImage.classList.add(validEmotion);
+        emotionBubble.classList.add(validEmotion);
+
+        // Update emoji display
+        emotionBubble.textContent = emojis[validEmotion] || emojis.neutral;
+
+        // Activate float bubble if not neutral
+        if (validEmotion !== 'neutral') {
+            emotionBubble.classList.add('active');
+        } else {
+            emotionBubble.classList.remove('active');
+        }
     };
 
     const speak = (text) => {
@@ -110,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             speechSynthesis.cancel();
         }
         clearInterval(lipSyncInterval);
+        characterImage.src = closedMouthImg;
 
         const utterance = new SpeechSynthesisUtterance(text);
         const selectedOption = (voiceSelect.selectedOptions && voiceSelect.selectedOptions.length > 0)
@@ -122,22 +147,42 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        let boundaryCalled = false;
+
+        // Primary: flap the mouth on every spoken word boundary for precise timing
+        utterance.onboundary = (event) => {
+            if (event.name === 'word') {
+                boundaryCalled = true;
+                characterImage.src = openMouthImg;
+                setTimeout(() => {
+                    if (speechSynthesis.speaking) {
+                        characterImage.src = closedMouthImg;
+                    }
+                }, 100); // Close mouth 100ms after opening
+            }
+        };
+
         utterance.onstart = () => {
-            let mouthOpen = true;
-            lipSyncInterval = setInterval(() => {
-                characterImage.src = mouthOpen ? currentOpenImg : currentClosedImg;
-                mouthOpen = !mouthOpen;
-            }, 150);
+            // Secondary Fallback: if browser doesn't fire boundary events, start interval lip sync
+            setTimeout(() => {
+                if (!boundaryCalled && speechSynthesis.speaking) {
+                    console.log("Boundary events not firing. Falling back to interval lip-sync.");
+                    lipSyncInterval = setInterval(() => {
+                        let isClosed = characterImage.src.includes('closed');
+                        characterImage.src = isClosed ? openMouthImg : closedMouthImg;
+                    }, 150);
+                }
+            }, 600);
         };
 
         utterance.onend = () => {
             clearInterval(lipSyncInterval);
-            characterImage.src = currentClosedImg;
+            characterImage.src = closedMouthImg;
         };
 
         utterance.onerror = () => {
             clearInterval(lipSyncInterval);
-            characterImage.src = currentClosedImg;
+            characterImage.src = closedMouthImg;
         };
 
         speechSynthesis.speak(utterance);
