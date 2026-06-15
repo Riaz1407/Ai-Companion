@@ -17,5 +17,18 @@ project_id.txt
 .DS_Store
 Thumbs.db
 
+
+
 # Scratch directory
 scratch/
+.cache/
+.local/
+__pycache__/
+*.zip
+
+
+
+
+
+
+
