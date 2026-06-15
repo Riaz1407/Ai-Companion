@@ -32,7 +32,7 @@ async def chat():
         return jsonify({'response': user_message})
 
     # Instruction to force JSON response with emotion
-    formatted_prompt = f"{user_message}\n\n[SYSTEM: Respond ONLY in JSON format: {{\"text\": \"your response\", \"emotion\": \"neutral|happy|sad|angry|surprised\"}}]"
+    formatted_prompt = f"{user_message}\n\n[SYSTEM: Respond ONLY in JSON format: {{\"text\": \"your response\", \"emotion\": \"neutral|happy|sad|angry|surprised\"}}. The 'text' must not contain emoticons, physical action/roleplay descriptions, or textual declarations of your own emotions (e.g., do not write 'I am sad' or '*giggles*'). Choose the 'emotion' that best matches Waku's empathetic reaction: 'sad' if the user is sad/crying, 'angry' if frustrated/annoyed, 'surprised' if startled/shocked, 'happy' if cheerful/celebrating, and 'neutral' for normal chat.]"
 
     # Retrieve or create session dynamically
     adk_session = await runner.session_service.get_session(

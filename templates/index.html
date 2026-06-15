@@ -3,30 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WakuWaku</title>
+    <title>WakuWaku - Your 3D Anime Companion</title>
     <link rel="stylesheet" href="/static/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="chat-container">
-        <header class="chat-header">
-            <h1>AI Companion</h1>
-        </header>
-        <div class="character-viewer">
-            <div id="emotion-bubble" class="emotion-bubble">🐱</div>
-            <img id="character-image" src="/static/images/char-mouth-closed.png" alt="WakuWaku">
+    <!-- Floating ambient glowing background orbs -->
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <div class="app-layout">
+        <!-- Left Pane: Interactive 3D Card Viewer & Voice Status -->
+        <div class="character-pane">
+            <div class="character-viewer">
+                <div class="character-card">
+                    <div id="emotion-bubble" class="emotion-bubble">🐱</div>
+                    <img id="character-image" src="/static/images/char-mouth-closed.png" alt="WakuWaku">
+                    <div class="card-glare"></div>
+                </div>
+            </div>
+            
+            <!-- Voice wave graphic that animates while speaking -->
+            <div class="voice-wave" id="voice-wave">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <p id="character-status">Waku is listening</p>
         </div>
-        <p id="status">Ask me something!</p>
-        <footer class="chat-input-area">
-            <select id="voice-select"></select>
-            <textarea id="text-input" placeholder="Ask me anything..."></textarea>
-            <button id="send-button">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-            </button>
-        </footer>
+
+        <!-- Right Pane: Glassmorphic Interactive Chat Container -->
+        <div class="chat-pane">
+            <header class="chat-header">
+                <div class="header-info">
+                    <h1>WakuWaku</h1>
+                    <p class="subtitle">AI Cat Companion</p>
+                </div>
+                <div class="header-status">
+                    <span class="pulse-dot"></span>
+                    <span class="status-text">Online</span>
+                </div>
+            </header>
+            
+            <div class="chat-history" id="chat-history">
+                <!-- Initial Waku greeting message -->
+                <div class="message waku-message">
+                    <div class="message-avatar">🐱</div>
+                    <div class="message-bubble">
+                        <div class="message-text">Meow! Hello there, human friend! I'm Waku, your super intelligent cat companion. Ask me anything and let's have a wonderful chat, meow!</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input-area">
+                <select id="voice-select" title="Choose Voice Select"></select>
+                <textarea id="text-input" placeholder="Say something to Waku..."></textarea>
+                <button id="send-button" aria-label="Send Message">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
     </div>
+    
     <script src="/static/app.js"></script>
 </body>
 </html>
