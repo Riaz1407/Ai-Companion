@@ -2,7 +2,7 @@
 
 An interactive anime-style AI companion powered by **Google Gemini** with expressive animations, voice synthesis, and synchronized lip-sync.
 
-🌐 **Live Demo:** *Coming Soon*
+🌐 **Live Demo:** https://ai-companion-blond-eta.vercel.app
 🔗 **Repository:** https://github.com/Riaz1407/Ai-Companion-
 
 ---
