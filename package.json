@@ -1,0 +1,23 @@
+{
+  "name": "primary",
+  "version": "1.0.0",
+  "description": "An interactive anime-style AI companion powered by **Google Gemini** with expressive animations, voice synthesis, and synchronized lip-sync.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Riaz1407/Ai-Companion.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Riaz1407/Ai-Companion/issues"
+  },
+  "homepage": "https://github.com/Riaz1407/Ai-Companion#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  }
+}
